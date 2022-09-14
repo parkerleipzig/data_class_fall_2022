@@ -20,7 +20,7 @@ help.start()
 
 You should have installed tidyverse already. If not, then delete the hashtag in front of install.packages("tidyverse") and run the code chunk at line 22.
 ```{r}
-#install.packages("tidyverse")
+install.packages("tidyverse")
 install.packages("rio") 
 install.packages("janitor")
 ```
@@ -28,7 +28,8 @@ install.packages("janitor")
 Remember, package installation usually is a one-time thing on your hard drive. But when you need to load the software libraries each time you start a script. Libraries are bits of software you will have to load each time into R to make things run.
 
 ```{r message=FALSE, warning=FALSE}
-library(tidyverse)
+#
+#library(tidyverse)
 library(rio)
 library(janitor)
 ```
@@ -44,7 +45,6 @@ We will work with a dataset of MediaSalaries that I cleaned and modified slightl
     IRE Old School: Four Corners Test!
     13 Columns
     1658 Rows
-
     Numberic data in Salary, Years Experience
     Mixed string data in Gender Identity / Ethnicity, Job duties
 
@@ -270,8 +270,14 @@ summary(Reporters$Salary)
 Questions:
 
     1: Who is making $230,504 as a reporter???   
+      A senior reporter at ProPublica
+      
     2: Make a table for editors, figure out medians.   
+      Median = 60,240
+      
     3: Find highest paid editor. Resent them.   
+      245,000 for an editorial director at CondeNast
+      
     4: Make a table for any position involving data  
 
 Table with Black reporters at Wall Street Journal
@@ -350,20 +356,31 @@ This is a basic chart using ggplot. To break down the code:
 
     1: Build a table for NewYorkTimes employees, and determine median salary of NewYorkTimes employees   
 ```{r}
-#your answer here
+NewYorkTimes <- subset(MediaBucks, COMPANY=="NewYorkTimes")
+summary(NewYorkTimes$Salary)
+#Median = 52,000
 ```
 
 
       2: Identify title, gender and race of the highest paid position at NYT  
 ```{r}
-#your answer here
+
+HighestPaidDetails <- NewYorkTimes %>% filter(Salary== 350000)
+#Title = Executive Editor, News
+#Gender = no answer
+#Race = Black
+
 ```
 
 
     3: Search for Bloomberg,  check median salary, compare to NYT results above.
 
 ```{r}
-#your answer here
+
+Bloomberg <- subset(MediaBucks, COMPANY=="Bloomberg")
+summary(Bloomberg$Salary)
+
+#The Median is 50,350 which is a little less than 2,000 less than the median salary of an employee at the New York Times.
 
 ```
 
