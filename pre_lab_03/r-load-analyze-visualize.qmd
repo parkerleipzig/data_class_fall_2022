@@ -390,7 +390,9 @@ summary(NewYorkTimes$Salary)
       2: Identify title, gender and race of the highest paid position at NYT  
 ```{r}
 
-HighestPaidDetails <- NewYorkTimes %>% filter(Salary== 350000)
+NewYorkTimes %>% 
+  select(TITLE, Gender, Race, Salary) %>% 
+  filter(Salary==350000)
 #Title = Executive Editor, News
 #Gender = no answer
 #Race = Black
