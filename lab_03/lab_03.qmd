@@ -1,0 +1,90 @@
+#Lab_03 {lab_03}
+
+rob wells, 8/14/2021
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load libraries and establish settings
+```{r}
+# Turn off scientific notation
+options(scipen=999)
+
+# Load the tidyverse here
+library(tidyverse)
+# Load janitor here
+library(janitor)
+
+```
+
+### Load data
+
+In this data set, each row represents a city or town in Maryland with the 2010 and 2020 figures for: 
+
+-  Total population 
+-  White only population
+-  Black or African American only population
+-  Hispanic only population 
+-  Native American only population
+-  Asian only population
+-  Pacific Islander (including native Hawiian) only population
+
+Background on this data from [Social Explorer](https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&table=B02001) 
+```{r}
+# Write code to load the Maryland race by city, place for 2010 - 2020 and call it md_race.
+# The data is called lab_03.csv, and is in the same folder as lab_03.qmd (this data notebook)
+
+md_race <- rio::import("lab_03.csv")
+
+```
+
+
+## Answer questions
+
+Q1: Which five cities have the largest overall Hispanic population in 2020? Name the five cities that had the largest Hispanic population in 2020. 
+
+A1:
+```{r}
+md_race %>% 
+  select(x2020_hispanic, place) %>% 
+  arrange(desc(x2020_hispanic))
+
+
+# 1. Baltimore City
+# 2. Wheaton
+# 3. Germantown
+# 4. Silver Spring
+# 5. Aspen Hill
+
+```
+
+Q2: Find the cities with the largest Black population in 2020 and arrange the results in descending order. 
+
+A2:
+
+```{r}
+md_race %>% 
+  select(x2020_black, place) %>% 
+  arrange(desc(x2020_black))
+
+# 1. Baltimore City
+# 2. Waldorf
+# 3. Bowie City
+# 4. Clinton
+# 5. Columbia
+
+```
+
+Q3: Create a table called top_hispanic that shows the top 15 communities with the largest Hispanic population in 2020, and also display the 2010 Hispanic population and the total community population for 2020. Look at your results - what stands out to you? Craft a one-paragraph story pitch for your editor. 
+
+A3:
+
+```{r}
+top_hispanic <-md_race %>% 
+arrange(desc(x2020_hispanic))
+head(top_hispanic, 15)
+
+#What stands out to me is that the Hispanic population in Baltimore City grew by about 10,000 from 2010 to 2020. Also the Hispanic took up more than 50% of the population in 2020. Because of this, I would pitch a story about what attracts the Hispanic population to move to Baltimore City and find out a little more about why this community is growing in this specific part of Maryland. 
+
+```
