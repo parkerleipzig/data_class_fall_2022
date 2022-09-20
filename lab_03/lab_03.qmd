@@ -47,8 +47,8 @@ Q1: Which five cities have the largest overall Hispanic population in 2020? Name
 A1:
 ```{r}
 md_race %>% 
-  select(x2020_hispanic, place) %>% 
-  arrange(desc(x2020_hispanic))
+  select(place, x2020_hispanic) %>% 
+  slice_max(x2020_hispanic, n=5)
 
 
 # 1. Baltimore City
@@ -65,14 +65,8 @@ A2:
 
 ```{r}
 md_race %>% 
-  select(x2020_black, place) %>% 
+  select(place, x2020_black) %>% 
   arrange(desc(x2020_black))
-
-# 1. Baltimore City
-# 2. Waldorf
-# 3. Bowie City
-# 4. Clinton
-# 5. Columbia
 
 ```
 
@@ -82,8 +76,10 @@ A3:
 
 ```{r}
 top_hispanic <-md_race %>% 
-arrange(desc(x2020_hispanic))
-head(top_hispanic, 15)
+  select(place, x2020_hispanic, x2010_hispanic, x2020_total) %>% 
+  arrange(desc(x2020_hispanic)) %>% 
+  slice_max(x2020_hispanic, n=15)
+top_hispanic
 
 #What stands out to me is that the Hispanic population in Baltimore City grew by about 10,000 from 2010 to 2020. Also the Hispanic took up more than 50% of the population in 2020. Because of this, I would pitch a story about what attracts the Hispanic population to move to Baltimore City and find out a little more about why this community is growing in this specific part of Maryland. 
 
