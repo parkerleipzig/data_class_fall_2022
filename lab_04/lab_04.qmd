@@ -1,0 +1,89 @@
+#Lab_04 {lab_04}
+
+rob wells, 8/14/2021
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load libraries and establish settings
+```{r}
+# Turn off scientific notation
+options(scipen=999)
+
+library(tidyverse)
+
+library(janitor)
+
+
+
+```
+
+### Load data
+
+In this data set, each row represents a city or town in Maryland with the 2010 and 2020 figures for: 
+
+-  Total population 
+-  White only population
+-  Black or African American only population
+-  Hispanic only population 
+-  Native American only population
+-  Asian only population
+-  Pacific Islander (including native Hawiian) only population
+
+Background on this data from [Social Explorer](https://www.socialexplorer.com/data/ACS2016_5yr/metadata/?ds=ACS16_5yr&table=B02001) 
+```{r}
+# Write code to load the Maryland race by city, place for 2010 - 2020 and call it md_race.
+# The data is called lab_03.csv, and is in the same folder as lab_03.qmd (this data notebook)
+
+md_race<- read.csv("lab_04.csv") %>% 
+  as.data.frame()
+
+```
+
+## Answer questions
+
+Q1: Name the five cities that had the largest Hispanic population as a percentage of the entire population in 2020 and call it top5_hispanic. Produce a top 5 table for each, selecting the place, 2020 Hispanic, 2020 total and your new calculation.
+
+A1:
+```{r}
+
+top5_hispanic <- md_race %>% 
+  mutate(h_pct2020 = (x2020_hispanic/x2020_total)*100) %>% 
+  select(place, x2020_hispanic, x2020_total, h_pct2020) %>% 
+  slice_max(h_pct2020, n=5)
+
+top5_hispanic
+```
+
+Q2: Compare the top 10 cities with the largest Black population as a percentage of the overall population in 2010 and 2020. Filter for places with more than 20,000 population in 2010. Call your results pct_black. Compare results for 2020 vs 2010. What is different? What surprised you? 
+
+I noticed that Suitland had the the largest number of Black people in both 2020 and 2010 and took up about 44% of the population of both 2010 and 2020 combined even though less Black people lived there in 2020, it is just that almost the entire population of both those years is Black. I also noticed that Waldorf had a large increase of Black people in the 10 years.
+
+A2:
+
+```{r}
+
+md_race %>% 
+  mutate(pct_black = x2020_black/(x2020_total + x2010_total)*100) %>% 
+  select(place, x2020_black, x2010_black, x2010_total, x2020_total, pct_black) %>% 
+  filter(x2010_total > 20000) %>% 
+  slice_max(pct_black, n=10)
+```
+
+Q3: Find the 15 communities that had the great gains in Hispanic population from 2010 to 2020 as measured by percentage change. Also calculate percentage change for the community's overall growth during the same period. Filter your results for communities with more than 10,000 people as of 2020. Your results will be hisp_growth. Look at your results, craft a one-paragraph story pitch for your editor. 
+
+Based on these results, I would be inspired to pitch a story about how the Hispanic communities have seen the greatest amount of growth in Aspen Hill, Montgomery Village, Frederick City, Baltimore City and Germantown and interview hispanic communities in these towns that have seen the most growth and find out why they moved to these communities (what attracted them, etc.). I would also compare that to the communities that have seen the least amount of Hispanic growth and ask those in the communities with the most amount of growth why they think those communities are not popular areas for Hispanic people to move to.
+
+A3:
+
+```{r}
+
+md_race %>% 
+  mutate(hisp_growth = (x2020_hispanic - x2010_hispanic)/(x2010_hispanic)*100) %>% 
+  slice_max(x2020_hispanic, n=15) %>% 
+  mutate(growth = (x2020_total - x2010_total)/(x2010_total)*100) %>% 
+  select(place, x2010_hispanic, x2020_hispanic, hisp_growth, x2010_total, x2020_total,growth) %>% 
+  filter(x2020_total > 10000)
+
+```
