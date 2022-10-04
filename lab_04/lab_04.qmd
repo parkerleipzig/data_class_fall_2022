@@ -49,8 +49,8 @@ A1:
 ```{r}
 
 top5_hispanic <- md_race %>% 
+  select(place, x2020_hispanic, x2020_total, h_pct2020) %>%
   mutate(h_pct2020 = (x2020_hispanic/x2020_total)*100) %>% 
-  select(place, x2020_hispanic, x2020_total, h_pct2020) %>% 
   slice_max(h_pct2020, n=5)
 
 top5_hispanic
@@ -65,8 +65,8 @@ A2:
 ```{r}
 
 md_race %>% 
-  mutate(pct_black = x2020_black/(x2020_total + x2010_total)*100) %>% 
   select(place, x2020_black, x2010_black, x2010_total, x2020_total, pct_black) %>% 
+  mutate(pct_black = x2020_black/(x2020_total + x2010_total)*100) %>% 
   filter(x2010_total > 20000) %>% 
   slice_max(pct_black, n=10)
 ```
@@ -80,10 +80,10 @@ A3:
 ```{r}
 
 md_race %>% 
+  select(place, x2010_hispanic, x2020_hispanic, hisp_growth, x2010_total, x2020_total,growth) %>% 
   mutate(hisp_growth = (x2020_hispanic - x2010_hispanic)/(x2010_hispanic)*100) %>% 
   slice_max(x2020_hispanic, n=15) %>% 
   mutate(growth = (x2020_total - x2010_total)/(x2010_total)*100) %>% 
-  select(place, x2010_hispanic, x2020_hispanic, hisp_growth, x2010_total, x2020_total,growth) %>% 
   filter(x2020_total > 10000)
 
 ```
