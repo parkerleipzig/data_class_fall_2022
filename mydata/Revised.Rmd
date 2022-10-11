@@ -29,4 +29,13 @@ street_lights <- read.csv("street_lights.csv") %>%
 median_income <- read.csv("household_income.csv") %>% 
   clean_names
 
+street_lights %>% 
+  ggplot() +
+  geom_bar(aes(x=reorder(x2020_data, n), weight=n, fill = n)) +
+    labs(title = "Street Light Outages Per 1,000 Residents ", 
+       subtitle = "BNIA Data, 2020",
+       caption = "Graphic by Parker Leipzig",
+       y="Numbers of Street Lights Out",
+       x="Community")
+
 ```
