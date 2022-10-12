@@ -1,0 +1,51 @@
+---
+title: "Street Light Outage Data Comparison"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(rvest)
+library(ggthemes)
+
+```
+
+
+```{r}
+#adding and cleaning data (one of them was formatted with commas sonthey were removed with the numeric code)
+street_lights <- read.csv("street_lights.csv") %>% 
+  clean_names
+
+median_income <- read.csv("median_income*.csv") %>% 
+  clean_names
+
+glimpse(median_income)
+median_income$x2020_data <- as.numeric(median_income$x2020_data)
+
+#analysis
+
+street_lights10 <- street_lights %>% 
+  slice_max(x2020_data, n = 10)
+
+street_lights10 %>% 
+  ggplot() +
+  geom_bar(aes(x=reorder(x2020_data, community), weight=x2020_data, fill = x2020_data)) +
+    labs(title = "Street Light Outages Per 1,000 Residents ", 
+       subtitle = "BNIA Data, 2020",
+       caption = "Graphic by Parker Leipzig",
+       y="Numbers of Street Lights Out",
+       x="Community")
+
+median_income10 <- median_income %>% 
+  slice_max(x2020_data, n = 10)
+
+median_income10 %>% 
+  ggplot() +
+  geom_bar(aes(x=reorder(x2020_data, community), weight=x2020_data, fill = x2020_data)) +
+    labs(title = "Median Income in Baltimore City Neighborhoods ", 
+       subtitle = "BNIA Data, 2020",
+       caption = "Graphic by Parker Leipzig",
+       y="Median Income in $",
+       x="Community")
+```
