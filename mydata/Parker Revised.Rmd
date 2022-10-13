@@ -39,10 +39,15 @@ street_lights10 %>%
 
 median_income10 <- median_income %>% 
   slice_max(x2020_data, n = 10)
+glimpse(median_income10)
+
+median_income_bottom <- median_income %>% 
+  slice_min(x2020_data, n = 10)
+glimpse(median_income_bottom)
 
 median_income10 %>% 
   ggplot() +
-  geom_bar(aes(x=reorder(x2020_data, community), weight=x2020_data, fill = x2020_data)) +
+  geom_bar(aes(x=reorder(community, x2020_data), weight=x2020_data, fill = x2020_data)) +
     labs(title = "Median Income in Baltimore City Neighborhoods ", 
        subtitle = "BNIA Data, 2020",
        caption = "Graphic by Parker Leipzig",
