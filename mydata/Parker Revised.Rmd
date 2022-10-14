@@ -1,5 +1,5 @@
 ---
-title: "Street Light Outage Data Comparison"
+title: "Street Light Data Comparison"
 output: html_notebook
 ---
 
