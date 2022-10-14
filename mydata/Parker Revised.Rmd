@@ -13,44 +13,44 @@ library(ggthemes)
 
 
 ```{r}
-#adding and cleaning data (one of them was formatted with commas sonthey were removed with the numeric code)
+#adding and cleaning data
 street_lights <- read.csv("street_lights.csv") %>% 
   clean_names
 
-median_income <- read.csv("median_income*.csv") %>% 
+median_income <- read.csv("income.csv") %>% 
   clean_names
 
 glimpse(median_income)
-median_income$x2020_data <- as.numeric(median_income$x2020_data)
 
-#analysis
+#joining tables to become one cohesive dataframe
 
-street_lights10 <- street_lights %>% 
-  slice_max(x2020_data, n = 10)
+whole_data <- street_lights %>% 
+  inner_join(median_income, by="community") %>% 
+  arrange(income)
+whole_data
 
-street_lights10 %>% 
-  ggplot() +
-  geom_bar(aes(x=reorder(x2020_data, community), weight=x2020_data, fill = x2020_data)) +
-    labs(title = "Street Light Outages Per 1,000 Residents ", 
+#arranging to get the data for the neighborhoods in Baltimore with the top 10 lowest median income
+
+whole_data10 <- whole_data %>% 
+  arrange(income) %>% 
+  head(income, n = 10)
+
+#analysis graph to display this data
+
+whole_data10 %>% 
+  ggplot(aes(community, income, fill = x2020_data)) +
+  geom_bar(stat="identity", position = "dodge") +
+  coord_flip() +
+  theme_minimal() +
+  labs(title="Street Lights in Lowest Income Baltimore Neighborhoods",
        subtitle = "BNIA Data, 2020",
        caption = "Graphic by Parker Leipzig",
-       y="Numbers of Street Lights Out",
+       y="Income",
        x="Community")
+  
+```
 
-median_income10 <- median_income %>% 
-  slice_max(x2020_data, n = 10)
-glimpse(median_income10)
 
-median_income_bottom <- median_income %>% 
-  slice_min(x2020_data, n = 10)
-glimpse(median_income_bottom)
 
-median_income10 %>% 
-  ggplot() +
-  geom_bar(aes(x=reorder(community, x2020_data), weight=x2020_data, fill = x2020_data)) +
-    labs(title = "Median Income in Baltimore City Neighborhoods ", 
-       subtitle = "BNIA Data, 2020",
-       caption = "Graphic by Parker Leipzig",
-       y="Median Income in $",
-       x="Community")
+
 ```
