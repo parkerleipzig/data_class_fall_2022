@@ -1,0 +1,87 @@
+#lab_07 
+Sean Mussenden, Aug 16, 2022
+
+## About this lab
+
+To complete this lab, you need to:
+* write code in empty codeblocks provided to answer questions included (look for **Q**).
+* write out the answer in the form of a complete sentence in the space given (look for **A**).
+
+When you are finished, commit changes and push to your personal GitHub repo, then submit the URL to this document on ELMS.
+
+## Load libraries and establish settings
+**Task**: Make a code block and load janitor and the tidyverse
+
+## Load data
+
+For today's lab, we are using the DEA's ARCOS database, which tracks shipments of opioids and other controlled substances from manufacturers to pharmacies.  As we will read this week, the Washington Post used this data to show which communities were flooded by opioids during the death and overdose crisis of the last two decades. 
+
+There are four tables in the data folder. 
+
+* arcos.csv has the total number of opioid pills shipped to pharmacies located in each U.S. county each year (from 2006-2014). Each row represents one county in one year during that period. In some states, counties and cities are represented. You will need this for both questions.
+* county_population_2014.csv has the total population of each U.S. county (or city in some states) in 2014 from the American Community Survey. You will need to use this for the first question.
+* state_population_2014.csv has the total population of each U.S. state in 2014 from the American Community Survey. You will need to use this for the second question.
+* state_crosswalk.csv is a simple dataframe with two columns listing the state and its abbreviation.  You may need to use this for the second question.
+
+**Task**: Create a codeblock and load the four dataframes using appropriate names below.
+```{r}
+library(tidyverse)
+library(janitor)
+library(rvest)
+
+```
+
+```{r}
+opioid_data <- read.csv("data/arcos.csv") %>% 
+  clean_names
+
+pop_county <- read.csv("data/county_population_2014.csv") %>% 
+  clean_names
+
+pop_state <- read.csv("data/state_population_2014.csv") %>% 
+  clean_names
+
+crosswalk <- read.csv("data/state_crosswalk.csv") %>% 
+  clean_names
+```
+
+## Questions
+**Task** Create codeblocks in the space below and answer the questions. 
+
+**Q1** Which county or city received the most total opioid pills per person? Add up all the pills between 2006 and 2014 when doing this calculation. How many total pills, and what was the per person rate?
+
+Norton City, VA received the most total opoid pills per person at 28,673,870 and the per person rate is 2,628.9340.
+```{r}
+filtered_opioid <- opioid_data %>% 
+  group_by(countyfips, buyer_county, buyer_state) %>% 
+  summarise(total_pills = sum(total_pills)) %>% 
+  inner_join(pop_county, c("countyfips" = "geoid")) %>% 
+  mutate(pills_per_person = (total_pills / total_population_2014)) %>% 
+  arrange(desc(pills_per_person))
+
+```
+
+**Q2** Which U.S. state had the highest number of opioid pills per person for pills shipped in 2014? How many total pills, and what was the per person rate? How did that compare to Washington, D.C.?
+
+West Virginia is the state with the highest number of opiod pills per person shipped in 2014. Total pills of 120,746,760 and the per person rate is 6,513.188. 
+
+Washington D.C. has numbers much lower than this. The total pills is 8,599,410 and the pills per person is 1,356.939.
+```{r}
+
+pop_state$state <- str_replace(pop_state$state, "District of Columbia", "Washington, DC")
+
+newpop_state <- pop_state %>% 
+  inner_join(crosswalk, c("state" = "state_name")) 
+
+opioid_2014 <- opioid_data %>% 
+  select(buyer_county:total_pills) %>% 
+  inner_join(newpop_state, c("buyer_state" = "state_abb")) %>% 
+  filter(year == "2014") %>% 
+  group_by(buyer_state, total_population_2014) %>% 
+  summarise(total_pills = sum(total_pills)) %>% 
+  mutate(pills_per_person = (total_pills / total_population_2014)*100) %>% 
+  arrange(desc(pills_per_person))
+
+```
+
+**Q3** Write a sentence that could be dropped in as the lede of a news story from the finding in question two. 
