@@ -42,7 +42,7 @@ whole_data10 %>%
   geom_bar(stat="identity", position = "dodge") +
   coord_flip() +
   theme_minimal() +
-  labs(title="Street Lights in Lowest Income Baltimore Neighborhoods",
+  labs(title="Street Lights Outages in Lowest Income Baltimore Neighborhoods",
        subtitle = "BNIA Data, 2020",
        caption = "Graphic by Parker Leipzig",
        y="Income",
@@ -51,11 +51,11 @@ whole_data10 %>%
 ```
 
 ```{r}
-#Memo: Based on this data, I would particularly want to look further into the neighborhoods Cherry Hill, Brooklyn/Curtis Bay/Hawkins Point and Upton/Druid Heights. Not only are these in the top ten lowest income neighborhoods in Baltimore according to BNIA 2020 data, but they are also the three neighborhoods with the least amount of street lights per 1,000 residents, falling around 20 or less street lights per 1,000 residents. I would talk to the Department of Public Works and Transportation about why these areas have the least amount of street lights, if they have gotten any calls or complaints from residents and whether any solution will be introduced or not. I would also reach out to the councilmember for the districts that encompass these three neighborhoods, present my data and the findings and ask why these neighborhoods had such an inequality for a basic necessity like street lights that could help people get home safer. Most importantly, I would canvass the neighborhoods and see where the street lights that are in these scarce neighborhoods are concentrated and ask residents if they think this is an issue or not. 
+#Memo: Based on this data, I would particularly want to look further into the neighborhoods Southwest Baltimore, Greenmount East, and Poppleton/The Terraces/Hollins Market. Not only are these in the top ten lowest income neighborhoods in Baltimore according to BNIA 2020 data, but they are also the three neighborhoods with the most amount of street light outages per 1,000 residents, falling around 30 or more street lights outages per 1,000 residents. I would talk to the Department of Public Works and Transportation about why these areas have the most street light outages, if they have gotten any calls or complaints from residents and whether any solution will be introduced or not. I would also reach out to the councilmember for the districts that encompass these three neighborhoods, present my data and the findings and ask why these neighborhoods had such an inequality for a basic necessity like street lights that could help people get home safer. Most importantly, I would canvass the neighborhoods and see where the street light outages that are in these scarce neighborhoods are concentrated and ask residents if they think this is an issue or not. 
 
-#Tweet 1: According to BNIA 2020 data, Cherry Hill, a neighborhood in Baltimore that earns a median of about $23,000 has less than 10 street lights per 1,000 residents. Cherry Hill natives, is this an important issue to you?
+#Tweet 1: According to BNIA 2020 data, Poppleton, a neighborhood in Baltimore that earns a median of about $23,000 has about 28.1 street light outages per 1,000 residents. Poppleton natives, is this an important issue to you?
 
-#Tweet 2: The Baltimore Neighborhood Indicator Association 2020 data shows that Baltimore neighborhoods with the lowest income are also the ones with the least amount of street lights per 1,000 residents.
+#Tweet 2: The Baltimore Neighborhood Indicator Association 2020 data shows that Baltimore neighborhoods with the lowest income are also the ones with the most amount of street light outages per 1,000 residents.
 
 
 ```
