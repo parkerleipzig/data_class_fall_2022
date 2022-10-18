@@ -48,6 +48,20 @@ whole_data10 %>%
        y="Income",
        x="Community")
   
+topincome <- whole_data %>% 
+  arrange(desc(income)) %>% 
+  head(income, n = 10)
+
+topincome %>% 
+  ggplot(aes(community, income, fill = x2020_data)) +
+  geom_bar(stat="identity", position = "dodge") +
+  coord_flip() +
+  theme_minimal() +
+  labs(title="Street Lights Outages in Highest Income Baltimore Neighborhoods",
+       subtitle = "BNIA Data, 2020",
+       caption = "Graphic by Parker Leipzig",
+       y="Income",
+       x="Community")
 ```
 
 ```{r}
