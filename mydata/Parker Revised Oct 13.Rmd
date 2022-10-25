@@ -11,6 +11,7 @@ library(janitor)
 library(ggthemes)
 # Remove scientific notation
 options(scipen=999)
+library(tidyr)
 
 ```
 
@@ -55,15 +56,20 @@ whole_data10 %>%
   ggplot(aes(community, income, fill = x2020_data)) +
   geom_bar(stat="identity", position = "dodge") +
   coord_flip() +
-  theme_minimal() +
-  labs(title="Street Lights Outages in Lowest Income Baltimore Neighborhoods",
-       subtitle = "BNIA Data, 2020",
-       caption = "Graphic by Parker Leipzig",
-       y="Income",
-       x="Community")
+  scale_fill_gradient(low="grey",high="blue") +
+  labs(
+    title = "Street Light Outages in Low Income Balt Neighborhoods",
+    fill = "Street Light Outages",
+    subtitle = "BNIA Data 2020",
+    caption = "Graphic Made by Parker Leipzig",
+    x = "Income",
+    y = "Community"
+    
+  )
 ```
 
 ```{r}
+
 #creates dataframe for 10 highest median income neighborhoods
 topincome <- whole_data %>% 
   arrange(desc(income)) %>% 
@@ -77,12 +83,16 @@ topincome %>%
   ggplot(aes(community, income, fill = x2020_data)) +
   geom_bar(stat="identity", position = "dodge") +
   coord_flip() +
-  theme_minimal() +
-  labs(title="Street Lights Outages in Highest Income Baltimore Neighborhoods",
-       subtitle = "BNIA Data, 2020",
-       caption = "Graphic by Parker Leipzig",
-       y="Income",
-       x="Community")
+  scale_fill_gradient(low="grey",high="blue") +
+  labs(
+    title = "Street Light Outages in High Income Balt Neighborhoods",
+    fill = "Street Light Outages",
+    subtitle = "BNIA Data 2020",
+    caption = "Graphic Made by Parker Leipzig",
+    x = "Income",
+    y = "Community"
+    
+  )
 ```
 
 ```{r}
