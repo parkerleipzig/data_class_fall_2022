@@ -1,0 +1,154 @@
+---
+title: "Street Light Data Comparison"
+Name: Parker Leipzig
+Date: 10/13/22
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(ggthemes)
+# Remove scientific notation
+options(scipen=999)
+library(tidyr)
+
+```
+
+
+```{r}
+#adding and cleaning data
+street_lights <- read.csv("street_lights.csv") %>% 
+  clean_names
+
+median_income <- read.csv("income.csv") %>% 
+  clean_names
+
+glimpse(median_income)
+
+```
+
+#Wells comment - break this chunk into discreet parts - import and clean, one part. build tables, another part. graphics, another part. that way you can debug this easier and someone looking at your notebook can figure out the steps. As this is structured, it is one huge block and hard to discern the specific steps.
+
+#wells comment - break this into a separate chunk
+
+#joining tables to become one cohesive dataframe
+
+```{r}
+
+whole_data <- street_lights %>% 
+  inner_join(median_income, by="community") %>% 
+  arrange(income)
+whole_data
+
+#arranging to get the data for the neighborhoods in Baltimore with the top 10 lowest median income
+
+whole_data10 <- whole_data %>% 
+  arrange(income) %>% 
+  slice_min(income, n = 10)
+```
+
+```{r}
+#analysis graph to display this data
+#this compares how many street lights are out per 1,000 residents in the 10 neighborhoods with the lowest median incomes for 2020
+
+whole_data10 %>% 
+  ggplot(aes(community, income, fill = x2020_data)) +
+  geom_bar(stat="identity", position = "dodge") +
+  coord_flip() +
+  scale_fill_gradient(low="grey",high="blue") +
+  labs(
+    title = "Street Light Outages in Low Income Balt Neighborhoods",
+    fill = "Street Light Outages",
+    subtitle = "BNIA Data 2020",
+    caption = "Graphic Made by Parker Leipzig",
+    x = "Income",
+    y = "Community"
+    
+  )
+```
+#Wells Comment: We need context. What is the typical number of street light outages citywide? 22 per 1,000 people
+
+```{r}
+summary(whole_data$x2020_data)
+
+#  Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   3.90   17.18   22.45   21.74   25.93   34.20 
+```
+#Wells comment - See how I revised your graphic.
+
+```{r}
+whole_data10 %>% 
+  ggplot(aes(x = reorder(community, -x2020_data), y=x2020_data, fill = x2020_data)) +
+  geom_bar(stat="identity", position = "dodge") +
+  theme(legend.position = "none") +
+  coord_flip() +
+  scale_fill_gradient(low="grey",high="blue") +
+  labs(
+    title = "Street Light Outages in Low Income Balt Neighborhoods",
+    subtitle ="Citywide average: 22 Street Light Outages / 1000 People",
+
+    caption = "BNIA Data 2020,Graphic by Parker Leipzig / Rob Wells",
+    x = "",
+    y = "Street Lights Out Per 1000 People"
+    
+  )
+
+```
+
+#Wells comment: New datatable 
+```{r}
+install.packages("DT")
+library(DT)
+
+whole_data %>% 
+  rename(Neighborhood = community, Street_Light_Outages = x2020_data, Per_Capita_Income = income) %>% 
+  arrange(desc(Street_Light_Outages)) %>% 
+  datatable(options = list(
+  autoWidth = TRUE,
+  columnDefs = list(list(width = '10px', targets = c(1, 2)))
+))
+
+
+```
+
+
+```{r}
+
+#creates dataframe for 10 highest median income neighborhoods
+topincome <- whole_data %>% 
+  arrange(desc(income)) %>% 
+  slice_max(income, n = 10)
+```
+
+```{r}
+#analysis graph to display this data
+#this compares how many street lights are out per 1,000 residents in the 10 neighborhoods with the highest median incomes for 2020
+topincome %>% 
+ ggplot(aes(x = reorder(community, -x2020_data), y=x2020_data, fill = x2020_data)) +
+  geom_bar(stat="identity", position = "dodge") +
+  theme(legend.position = "none") +
+  coord_flip() +
+  scale_fill_gradient(low="grey",high="blue") +
+  labs(
+    title = "Street Light Outages in High Income Balt Neighborhoods",
+    subtitle ="Citywide average: 22 Street Light Outages / 1000 People",
+
+    caption = "BNIA Data 2020,Graphic by Parker Leipzig / Rob Wells",
+    x = "",
+    y = "Street Lights Out Per 1000 People"
+    
+  )
+
+```
+
+```{r}
+#Memo: Based on this data, I would particularly want to look further into the neighborhoods Southwest Baltimore, Greenmount East, and Poppleton/The Terraces/Hollins Market. Not only are these in the top ten lowest income neighborhoods in Baltimore according to BNIA 2020 data, but they are also the three neighborhoods with the most amount of street light outages per 1,000 residents, falling around 30 or more street lights outages per 1,000 residents. I would talk to the Department of Public Works and Transportation about why these areas have the most street light outages, if they have gotten any calls or complaints from residents and whether any solution will be introduced or not. I would also reach out to the councilmember for the districts that encompass these three neighborhoods, present my data and the findings and ask why these neighborhoods had such an inequality for a basic necessity like street lights that could help people get home safer. Most importantly, I would canvass the neighborhoods and see where the street light outages that are in these scarce neighborhoods are concentrated and ask residents if they think this is an issue or not. 
+
+#Tweet 1: According to BNIA 2020 data, Poppleton, a neighborhood in Baltimore that earns a median of about $23,000 has about 28.1 street light outages per 1,000 residents. Poppleton natives, is this an important issue to you?
+
+#Tweet 2: The Baltimore Neighborhood Indicator Association 2020 data shows that Baltimore neighborhoods with the lowest income are also the ones with the most amount of street light outages per 1,000 residents.
+
+
+```
+
