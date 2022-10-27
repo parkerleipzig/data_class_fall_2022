@@ -48,25 +48,6 @@ whole_data10 <- whole_data %>%
   slice_min(income, n = 10)
 ```
 
-```{r}
-#analysis graph to display this data
-#this compares how many street lights are out per 1,000 residents in the 10 neighborhoods with the lowest median incomes for 2020
-
-whole_data10 %>% 
-  ggplot(aes(community, income, fill = x2020_data)) +
-  geom_bar(stat="identity", position = "dodge") +
-  coord_flip() +
-  scale_fill_gradient(low="grey",high="blue") +
-  labs(
-    title = "Street Light Outages in Low Income Balt Neighborhoods",
-    fill = "Street Light Outages",
-    subtitle = "BNIA Data 2020",
-    caption = "Graphic Made by Parker Leipzig",
-    x = "Income",
-    y = "Community"
-    
-  )
-```
 #Wells Comment: We need context. What is the typical number of street light outages citywide? 22 per 1,000 people
 
 ```{r}
@@ -78,6 +59,8 @@ summary(whole_data$x2020_data)
 #Wells comment - See how I revised your graphic.
 
 ```{r}
+#analysis graph to display this data
+#this compares how many street lights are out per 1,000 residents in the 10 neighborhoods with the lowest median incomes for 2020
 whole_data10 %>% 
   ggplot(aes(x = reorder(community, -x2020_data), y=x2020_data, fill = x2020_data)) +
   geom_bar(stat="identity", position = "dodge") +
