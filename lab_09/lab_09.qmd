@@ -1,0 +1,85 @@
+#lab_08
+Sean Mussenden, Aug 16, 2022
+
+## About this lab
+
+To complete this lab, you need to:
+* write code in empty codeblocks provided to answer questions included (look for **Q**).
+* write out the answer in the form of a complete sentence in the space given (look for **A**).
+
+When you are finished, commit changes and push to your personal GitHub repo, then submit the URL to this document on ELMS.
+
+## Load libraries and establish settings
+**Task**: Load janitor and the tidyverse and sf
+```{r}
+library(tidyverse)
+library(janitor)
+library(sf)
+```
+
+## Load data
+
+You have been given two spatial dataframes and one regular dataframe to load.  The dataframes are:
+
+* baltimore_homicides.rds | spatial | location and details about each Baltimore homicide between 2007 and 2017, including information about the status (open, closed with arrest, closed without arrest) and the exact location. Details on the data: https://github.com/washingtonpost/data-homicides
+* baltimore_tract_shapefiles.rds | spatial | polygons of each census tract in Baltimore
+* baltimore_tract_demographics.rds | regular | the total population and white population of each baltimore Census tract in 2017.
+
+**Task** Load the data
+```{r}
+homicides <- read_rds("data/baltimore_homicides.rds") %>% 
+  clean_names
+
+census_tracts <- read_rds("data/baltimore_tract_shapefiles.rds") %>% 
+  clean_names
+
+demographics <- read_rds("data/baltimore_tract_demographics.rds") %>% 
+  clean_names
+
+```
+
+## Questions
+
+**Q1** Are homicides that occur in majority white Census tracts in Baltimore solved at a higher rate than homicides in non-majority white Baltimore census tracts?
+* Write up your findings in three paragraphs that could be dropped into a news story, with the answer to the question as the lede. 
+* Include any other relevant details.
+* Output a table with relevant results. 
+* Output at least one map visualization pertinent to your finding. 
+
+**A1** 
+#Homicides that occur in majority white Census tracts in Baltimore are solved at a higher rate than homicides in non-majority white Baltimore Census tracts. In fact, there are over 66% of homicides that remain unsolved in non-majority white neighborhoods compared to 46% unsolved in majority white neighborhoods. 
+#Additionally, while 46% of homicides in majority white neighborhoods are unsolved, the rate of homicides unsolved is not equivalent to those in non-majority white neighborhoods. There are 239 homicides in majority white neighborhoods, and the unsolved homicides make up 111 of those. In the non-majority white neighborhoods, there are 2,585 total homicides and 1,712 of those are unsolved. 
+#This clearly shows that not only is the crime rate higher in non-majority white neighborhoods, but also the rate at which the police solves murders is lower in non-majority white neighborhoods even though there are more homocides that need to be dealt with. 
+```{r}
+majority_white_tracts <- demographics %>% 
+  mutate(pct_white = white_pop/total_pop) %>% 
+  select(geoid, name, pct_white) %>% 
+  mutate(neighborhood_demo = case_when(
+    pct_white > 0.50 ~ "majority white",
+    pct_white < 0.50 ~ "not majority white"
+  ))
+
+majority_white_tracts <- majority_white_tracts %>% 
+  inner_join(census_tracts) %>% 
+  st_as_sf()
+
+killings <- homicides %>% 
+  st_join(majority_white_tracts) %>% 
+  as_tibble()
+  
+crime_by_neighborhoods <- killings %>% 
+  group_by(neighborhood_demo,disposition) %>% 
+  count() %>% 
+  pivot_wider(names_from='disposition', values_from='n') %>% 
+  clean_names() %>% 
+  mutate(total_homicides = closed_by_arrest+closed_without_arrest+open_no_arrest) %>% 
+  mutate(unsolved = open_no_arrest+closed_without_arrest) %>%
+  mutate(pct_unsolved = unsolved/total_homicides*100)
+
+ggplot() +
+  geom_sf(data=census_tracts) +
+  geom_sf(data=homicides)
+
+
+```
+
