@@ -1,0 +1,161 @@
+#lab_10
+Sean Mussenden, Aug 16, 2022
+
+## About this lab
+
+To complete this lab, you need to:
+* write code in empty codeblocks provided to answer questions included (look for **Q**).
+* write out the answer in the form of a complete sentence in the space given (look for **A**).
+
+When you are finished, commit changes and push to your personal GitHub repo, then submit the URL to this document on ELMS.
+
+## Load libraries and establish settings
+**Task**: Load janitor, the tidyverse, sf and leaflet.
+```{r}
+library(janitor)
+library(tidyverse)
+library(sf)
+library(leaflet)
+```
+
+## Motivation for analysis
+
+You are reporting a story looking at how the pervasiveness of gun violence affects student learning, and decide you want to identify a school in Washington, D.C. that has had multiple gunshot events on or very near school grounds during the schoolday when school was open.
+
+You have a dataframe of timestamped and geolocated gunshots between 2014 and 2022, captured from a network of Shot Spotter microphones located throughout the city that use sound to triangulate shot locations. 
+
+You also have a dataframe of when schools were open in 2019 and another with the geolocation of each school. 
+
+In answering the following questions, you'll want to only examine shooting events that:
+
+* Occurred on school days when school was open in calendar year 2019.
+* Occurred during school hours (defined as 7 a.m. to 4 p.m.).
+* Occurred within 200 meters of a school.
+* Are not gunshots that might have been mislabeled as fireworks by the Shot Spotter network. 
+
+## Load data
+
+You have been given four dataframes to load.  One is a regular dataframe. The other three are spatial dataframes.  
+
+The dataframes are:
+
+* shot_spotter.rds | spatial points | location of gunshots in DC between 2014 and 2022.  
+  * Triangulated latitude and longitude position of gunshots based on sound collected from microphones across the city. https://www.shotspotter.com/law-enforcement/gunshot-detection-technology/
+  * Details on the data: https://opendata.dc.gov/datasets/89bfd2aed9a142249225a638448a5276_29/about
+* washington_schools.rds | spatial points | location of each school in Washington.
+* dc_school_days_2019.rds | regular dataframe | indicates whether DC schools were open and closed on a given date.
+* washington_shapefile.rds | spatial polygon | outline of Washington DC, if you need it for mapping. You don't have to use this, only if you find it helpful to visualize things.
+
+```{r}
+gunshot_location <- read_rds("data/shot_spotter.rds") %>% 
+  clean_names()
+schools_location <- read_rds("data/washington_schools.rds") %>% 
+  clean_names()
+dc_schools <- read_rds("data/dc_school_days_2019.rds") %>% 
+  clean_names()
+dc_shapefile <- read_rds("data/washington_shapefile.rds") %>% 
+  clean_names()
+```
+
+## Questions
+
+**Q1** Students in what Washington school were exposed to the most gunshot events during school hours in 2019? How many?
+**A1** 
+```{r}
+gunshots_schools_2019 <- dc_schools %>% 
+  clean_names() %>% 
+  filter(str_detect("school_open", school_status))
+
+shooting_time <- gunshot_location %>% 
+  clean_names() %>% 
+  filter(year=="2019", hour>6, hour<16, type!="Gunshot_or_Firecracker")
+
+shootings <- shooting_time %>% 
+  clean_names() %>% 
+  inner_join(school_open, by= "date")
+
+wash_schools_buffered <- schools_location %>% 
+  mutate(geometry = st_buffer(geometry, dist=200))
+
+exposed_schools <- wash_schools_buffered %>% 
+  clean_names() %>% 
+  st_join(shootings, left="FALSE") %>% 
+  group_by(school_name) %>% 
+  count() %>% 
+  arrange(desc(n))
+
+```
+
+**Q2** How many distinct shooting events were there within 200 meters of any DC school in 2019, during school hours?
+**A2** 132 events
+```{r}
+school_open <- gunshots_schools_2019 %>% 
+  clean_names() %>% 
+  filter(str_detect("school_open", school_status))
+
+shooting_time <- gunshot_location %>% 
+  clean_names() %>% 
+  filter(year=="2019", hour>6, hour<16, type!="Gunshot_or_Firecracker")
+
+shootings <- shooting_time %>% 
+  clean_names() %>% 
+  inner_join(school_open, by="date")
+
+wash_schools_buffered <- schools_location %>% 
+  mutate(geometry = st_buffer(geometry, dist=200))
+
+exposed_schools <- wash_schools_buffered %>% 
+  clean_names() %>% 
+  st_join(shootings, left="FALSE")
+```
+
+
+**Q3** How many distinct schools had a shooting event within 200 meters in 2019, during school hours?
+**A3** 74 schools
+```{r}
+school_open <- gunshots_schools_2019 %>% 
+  clean_names() %>% 
+  filter(str_detect("school_open", school_status))
+
+shooting_time <- gunshot_location %>% 
+  clean_names() %>% 
+  filter(year=="2019", hour>6, hour<16, type!="Gunshot_or_Firecracker")
+
+shootings <- shooting_time %>% 
+  clean_names() %>% 
+  inner_join(school_open, by="date")
+
+wash_schools_buffered <- schools_location %>% 
+  mutate(geometry = st_buffer(geometry, dist=200))
+
+distinct_schools <- wash_schools_buffered %>% 
+  clean_names() %>% 
+  st_join(shootings, left="FALSE") %>% 
+  distinct(school_name)
+```
+
+**Q4** Produce a dataframe with the shootings that occurred near the answer to question 1. Write an anecdotal top of a story centering on shootings near that school in 2019, followed by a few paragraphs of context from the answers to question 2 and 3.  
+**A4** During 2019, 74 school in D.C. had a shooting within 200 ft of the school while the school day was happening. There were a total of 132 shootings near Washington D.C. schools while classes were happening in 2019.
+```{r}
+school_open <- gunshots_schools_2019 %>% 
+  clean_names() %>% 
+  filter(str_detect("school_open", school_status))
+
+shooting_time <- gunshot_location %>% 
+  clean_names() %>% 
+  filter(year=="2019", hour>6, hour<16, type!="Gunshot_or_Firecracker")
+
+shootings <- shooting_time %>% 
+  clean_names() %>% 
+  inner_join(school_open, by="date")
+
+wash_schools_buffered <- schools_location %>% 
+  mutate(geometry = st_buffer(geometry, dist=200))
+
+top_school <- wash_schools_buffered %>% 
+  clean_names() %>% 
+  st_join(shootings, left="FALSE") %>% 
+  filter(grepl("Ketcham ES", school_name)) 
+```
+
+
