@@ -229,7 +229,7 @@ Which US state has the largest male population.
 
 
 pct_male <- get_acs(geography = "state",
-                    variables = c("B26101_001","B26101_012"),output="wide") %>%
+                    variables = c("B01001_001","B01001_012"),output="wide") %>%
   mutate(pct_male = male_pop/total_pop*100) %>% 
   arrange(desc(estimate))
             
