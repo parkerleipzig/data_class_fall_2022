@@ -1,0 +1,78 @@
+---
+title: "Mondawmin/Bolton Hill Income & Vacancy Chart"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+#Importing correct libraries
+```{r}
+library(tidyverse)
+library(janitor)
+library(ggthemes)
+library(dplyr)
+library(ggrepel)
+```
+
+#Importing datasets from BNIA
+```{r}
+median_income <- read_csv("median_income.csv") %>% 
+  clean_names()
+
+vacant_houses <- read_csv("vacant_houses.csv") %>% 
+  clean_names()
+```
+#Joining charts together
+```{r}
+income_vacancy <- median_income %>% 
+  inner_join(vacant_houses, by="community") %>% 
+  arrange(desc(income_2020)) %>% 
+  select(community, income_2010, income_2020, vacant_2010, vacant_2020) %>% 
+  filter((community=="Greater Mondawmin")|(community=="Midtown")| (community=="Baltimore City")) %>% 
+  as.data.frame()
+
+```
+
+#Making a bubble chart to compare
+
+#Wells comment: Parker, it took a bit to figure out. First, the income and vacancies were on totally different scales, so the graphic would look weird. I made a dual axis graphic, fixed the second legend so it scales to 100 (for the percent).
+#Second, ggplot wanted continuous data to draw a line and the data frame had one value per column. So I made it into a bubble chart. 
+#if you wanted to make this into a comparison of income and vacancies, you needed to deal with a dual axis graphic with two variables. 
+#we can discuss later. 
+
+```{r}
+income_vacancy %>% 
+  ggplot(aes(x = community)) +
+  geom_point(aes(y=income_2020), color = "green", stroke=10) +
+  geom_point(aes(y=vacant_2020*1000), stroke=5, color = "red") +
+  scale_y_continuous(
+    name = "2020 Median Income (Green)", limits=c(0, 62000),
+    sec.axis = sec_axis(~./600, name="2020 Percent Vacancies (Red)"))+
+  labs(
+    title = "Income of Baltimore Neighborhoods 2010 to 2020",
+    x = "Community",
+    caption = "source: BNIA Data - By: Parker Leipzig and Rob Wells"
+  )
+    
+  
+```
+
+
+
+#Original
+#Making a line chart to compare
+```{r}
+income_vacancy %>% 
+  ggplot(aes(x = community)) +
+  geom_line(aes(y=income_2010), color = "blue") +
+  geom_line(aes(y=income_2020), color = "green") +
+  geom_line(aes(y=vacant_2010), color = "red") +
+  geom_line(aes(y=vacant_2020), color = "yellow")
+  labs(
+    title = "Income and Vacancy of Baltimore Neighborhoods 2010 to 2020",
+    x = "Community",
+    caption = "source: BNIA Data - By: Parker Leipzig"
+  )
+```
