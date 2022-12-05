@@ -43,14 +43,14 @@ income_vacancy <- median_income %>%
 #we can discuss later. 
 
 Green - #64D197
-Pink - #C47795
+Pink - #E79E9E
 
 
 ```{r}
 income_vacancy %>% 
   ggplot(aes(x = community)) +
   geom_point(aes(y=income_2020), color = "#64D197", stroke=5) +
-  geom_point(aes(y=vacant_2020*1000), stroke=5, color = "#C47795") +
+  geom_point(aes(y=vacant_2020*1000), stroke=5, color = "#E79E9E") +
   scale_y_continuous(
     name = "2020 Income (Green)", limits=c(0, 62000), labels=scales::dollar_format(),
     sec.axis = sec_axis(~./60000, name="2020 Percent Vacancies (Pink)", labels = scales::percent))+
