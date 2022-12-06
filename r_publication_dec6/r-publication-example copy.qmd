@@ -1,0 +1,77 @@
+---
+title: "My Example Quarto Markdown HTML"
+author: "Parker Leipzig"
+date: "`r Sys.Date()`"
+format:
+  html:
+    theme: solar
+    layout: full
+    self-contained: true
+    toc: true
+    toc-depth: 2
+    code-fold: true
+execute: 
+  echo: true
+  warning: false
+  message: false
+---
+
+## Summary
+
+This document provides an exploration of possibilities with Quarto markdown. Pay attention to the YAML (at the top), the markdown (to style in the text areas), and the special properies (echo, eval) inside of the code blocks.
+
+**Task** You should render it **right now**, and take a look at the output html file. 
+
+**Task**: Next time through, **make changes** described in each section and look at how it changes things.
+
+
+## Yaml explanation
+
+At the top of the document, you'll see YAML settings, which control the output of the html document.  There are some new ones here, notably code-fold, which collapses all of the code, but allows users to click a toggle to expose it and toc, which loads a table of contents, based on the markdown headings.  
+
+#### Yaml changes next time through
+
+**Task** on your second render, make these changes.
+* Change the author name to your name.
+* Pick a theme from [this page](https://quarto.org/docs/output-formats/html-themes.html) and replace `cosmo` above with a style one you like. 
+* Change toc-depth from 1 to 2. 
+* Change code-fold to true
+
+**Task**: What did you expect to happen? Describe here what happened when you made these changes. 
+
+Because I changed the theme, I expected the biggest changes to be the colors of the html file. Instead, there were a lot of other changes I did not account for. The font style changed with this new theme I chose called solar and the top of the file's organization was altered. The author name and date published look more polished and have a place to go other than going line by line like the original did. Additionally, there is now a table of contents in the upper right corner that allows a user to click through to get to parts of the file they want to see. 
+
+
+## Codeblock explanation
+
+We've used codeblock QMD properties (eval, echo, warning) to control what's output. Notice the first time through what's included and what's run and what's not.
+
+Here's an example of code that shouldn't produce any output, but we should be able to see the gray box showing the code. 
+
+```{r}
+#| echo: true
+#| eval: true
+
+print("Set this way, the code should display and the output should show up on render")
+
+```
+
+Here's an example of code that we shouldn't be able to see the gray box showing the code, but we should be able to see the output. 
+
+```{r}
+#| echo: false
+#| eval: false
+
+print("Set this way, the code should not display and the output should not display on render")
+
+```
+
+#### Codeblock changes next time through
+
+**Task**
+* Change the first codeblock to echo true and eval true. Rewrite the print statement based on what you expect to happen.
+* Change the second codeblock to echo false and eval false. Rewrite the print statement based on what you expect to happen.
+
+**Task**: What did you expect to happen? Describe here what happened when you made these changes. 
+I expected the first changed code block to run the code in the chunk and display the code on the render and it did. I expected the second changed code block to not run the code in the chunk and not display the code on the render and it did not.
+
